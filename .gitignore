@@ -1,0 +1,7 @@
+# Visual Studio Code
+.vscode/
+.sfdx/
+sfdx-project.json
+
+*.log
+*.dmp

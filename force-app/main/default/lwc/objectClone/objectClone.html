@@ -1,0 +1,21 @@
+<template>
+    <lightning-record-edit-form object-api-name={objectApiName} record-type-id={recordTypeId} onsubmit={handleSubmit}>
+
+        <c-inline-error error-messages={errorMessages} if:true={hasErrorMessages}></c-inline-error>
+
+        <lightning-messages></lightning-messages>
+        <lightning-layout multiple-rows>
+            <lightning-layout-item if:false={initializedSObject} for:each={fields} for:item="field" key={field.apiName} size={columnSize}>
+                <lightning-input-field field-name={field.apiName} value={field.value} required={field.required}>
+                </lightning-input-field>
+            </lightning-layout-item>
+            <lightning-layout-item if:true={initializedSObject} for:each={initializedSObjectfields} for:item="field" key={field.apiName} size={columnSize}>
+                <lightning-input-field field-name={field.apiName} value={field.value} required={field.required}>
+                </lightning-input-field>
+            </lightning-layout-item>
+            <lightning-layout-item if:false={disabled} size=12 class='slds-text-align_right'>
+                <lightning-button type='submit' label={labels.Clone} variant="brand" class='slds-m-right_xx-small'></lightning-button>
+            </lightning-layout-item>
+        </lightning-layout>
+    </lightning-record-edit-form>
+</template>

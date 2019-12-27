@@ -1,0 +1,9 @@
+<aura:component implements="force:hasRecordId,force:lightningQuickAction,force:hasSObjectName">
+    <c:objectClone
+        recordId="{!v.recordId}"
+        objectApiName="{!v.sObjectName}"
+        numberOfColumns="2"
+        fieldsToFetchFieldSet="cloneableFields"
+        cloneableClassName="OpportunityCloneable">
+    </c:objectClone>
+</aura:component>

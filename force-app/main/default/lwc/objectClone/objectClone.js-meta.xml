@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>47.0</apiVersion>
+    <isExposed>true</isExposed>
+    <targets>
+        <target>lightning__AppPage</target>
+        <target>lightning__RecordPage</target>
+        <target>lightning__HomePage</target>
+    </targets>
+     <!-- Configuring the design attributes -->
+      <targetConfigs>
+        <targetConfig targets="lightning__HomePage,lightning__RecordPage,lightning__AppPage">
+            <property name="objectApiName" type="String" default='Account' label="Object API Name"/>
+            <property name="recordId" type="String" label="Record ID"/>
+            <property name="fieldsToFetchFieldSet" type="String" label="Fieldset containting the fields to display API Name"/>
+            <property name="numberOfColumns" type="integer" default='1' label="Number of Columns"/>
+        </targetConfig>
+      </targetConfigs>
+</LightningComponentBundle>

@@ -1,0 +1,10 @@
+<template>
+    <div class="slds-notify_container slds-is-relative">
+        <div role="alert" class="slds-notify slds-notify_toast slds-theme_error">
+            <div class="slds-notify__content">
+                <h2 class="slds-text-heading_small">{labels.An_Error_Occurred}</h2>
+                <p for:each={errorMessages} for:item='error' key={error}>{error}</p>
+            </div>
+        </div>
+    </div>
+</template>

@@ -1,0 +1,26 @@
+{
+    "compilerOptions": {
+        "experimentalDecorators": true,
+        "baseUrl": ".",
+        "paths": {
+            "c/inlineError": [
+                "inlineError/inlineError.js"
+            ],
+            "c/objectClone": [
+                "objectClone/objectClone.js"
+            ],
+            "c/utilities": [
+                "utilities/utilities.js"
+            ]
+        }
+    },
+    "include": [
+        "**/*",
+        "../../../../.sfdx/typings/lwc/**/*.d.ts"
+    ],
+    "typeAcquisition": {
+        "include": [
+            "jest"
+        ]
+    }
+}
