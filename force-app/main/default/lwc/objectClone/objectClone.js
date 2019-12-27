@@ -1,73 +1,43 @@
 import { LightningElement, api, track, wire } from 'lwc';
-import { getRecord, getFieldValue } from 'lightning/uiRecordApi';
 import { NavigationMixin } from 'lightning/navigation';
 
 import { buildExceptionMessages } from 'c/utilities';
 
 import Clone from '@salesforce/label/c.Clone';
+import Cancel from '@salesforce/label/c.Cancel';
 
 import getFieldSetFieldsByFieldSetName from '@salesforce/apex/Utilities.getFieldSetFieldsByFieldSetName';
-import executeClone from '@salesforce/apex/Utilities.executeClone';
-import executeInitCloneableSObject from '@salesforce/apex/Utilities.executeInitCloneableSObject';
+import doSave from '@salesforce/apex/Utilities.doSave';
+import doInitSObject from '@salesforce/apex/Utilities.doInitSObject';
+
+const MAX_NUMBER_OF_COLUMNS = 2;
 
 export default class ObjectClone extends NavigationMixin(LightningElement) {
 
     labels = {
-        Clone
+        Clone,
+        Cancel
     }
 
     @api recordId;
     @api objectApiName;
     @api recordTypeId;
-    @api cloneableClassName;
+    @api customQuickActionHandler;
     @api numberOfColumns;
-    @api fieldsToFetchFieldSet;
+    @api displayedFieldsFieldSet;
 
-    @track fieldSetFields = [];
-    @track fieldNamesToFetch = [];
     @track errorMessages = [];
     @track initializedSObject;
 
-    @wire(getFieldSetFieldsByFieldSetName, {objectApiName: '$objectApiName', fieldSetName: '$fieldsToFetchFieldSet'})
-    wiredFieldsToFetchFieldSet({data, error}){
-        if(data)
-        {
-            this.fieldSetFields = data;
-            this.fieldNamesToFetch = this.fieldSetFields.map(fieldSetField => { return `${this.objectApiName}.${fieldSetField.apiName}`});
-        }
-        if(error)
-        {
-            this.handleException(error);
-        }
-    }
-
-    @wire(getRecord, {recordId: '$recordId', fields: '$fieldNamesToFetch'})
-    wiredObject;
-
-    get fields()
-    {
-        let fields = [];
-        if(this.wiredObject && this.wiredObject.data && this.fieldSetFields && this.fieldSetFields.length)
-        {
-            fields = this.fieldSetFields.map(field => {
-                let value = getFieldValue(this.wiredObject.data, `${this.objectApiName}.${field.apiName}`);
-                return {
-                    apiName: field.apiName,
-                    value : value,
-                    required : field.required
-                };
-            });
-
-        }
-        return fields;
-    }
+    @wire(getFieldSetFieldsByFieldSetName, {objectApiName: '$objectApiName', fieldSetName: '$displayedFieldsFieldSet'})
+    wiredDisplayedFieldsFieldSetFields;
 
     get initializedSObjectfields()
     {
         let fields = [];
-        if(this.initializedSObject)
+        if(this.initializedSObject && this.wiredDisplayedFieldsFieldSetFields && this.wiredDisplayedFieldsFieldSetFields.data)
         {
-            fields = this.fieldSetFields.map(field => {
+            fields = this.wiredDisplayedFieldsFieldSetFields.data.map(field => {
                 let value = this.initializedSObject[field.apiName];
                 return {
                     apiName: field.apiName,
@@ -81,6 +51,10 @@ export default class ObjectClone extends NavigationMixin(LightningElement) {
 
     get columnSize()
     {
+        if(this.numberOfColumns > MAX_NUMBER_OF_COLUMNS)
+        {
+            this.numberOfColumns = MAX_NUMBER_OF_COLUMNS;
+        }
         return Math.round(12/this.numberOfColumns);
     }
 
@@ -92,9 +66,9 @@ export default class ObjectClone extends NavigationMixin(LightningElement) {
     async connectedCallback()
     {
         try{
-            this.initializedSObject = await executeInitCloneableSObject({
+            this.initializedSObject = await doInitSObject({
                 originalSObjectId:this.recordId,
-                cloneableClassName: this.cloneableClassName
+                customQuickActionHandler: this.customQuickActionHandler
             });
         }
         catch(exception)
@@ -118,8 +92,9 @@ export default class ObjectClone extends NavigationMixin(LightningElement) {
 
     async doCloneAndRedirect(params)
     {
-        let clonedObjectId = await executeClone(params);
+        let clonedObjectId = await doSave(params);
         this.navigateToRecordPage(clonedObjectId);
+        //TODO: notifytoast?
     }
 
     async handleSubmit(event)
@@ -128,9 +103,9 @@ export default class ObjectClone extends NavigationMixin(LightningElement) {
             event.preventDefault();
             const fields = event.detail.fields;
             await this.doCloneAndRedirect({
-                cloneableClassName: this.cloneableClassName,
+                customQuickActionHandler: this.customQuickActionHandler,
                 originalSObjectId: this.recordId,
-                fieldsMap: fields,
+                fieldsMap: {...this.initializedSObject, ...fields, ...{sobjectType: this.objectApiName}}
             });
         }
         catch(exception)
@@ -141,7 +116,6 @@ export default class ObjectClone extends NavigationMixin(LightningElement) {
 
     handleException(exception)
     {
-        console.log(exception);
         this.errorMessages = buildExceptionMessages(exception);
     }
 }

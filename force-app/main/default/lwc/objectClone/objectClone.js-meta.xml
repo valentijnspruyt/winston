@@ -12,8 +12,8 @@
         <targetConfig targets="lightning__HomePage,lightning__RecordPage,lightning__AppPage">
             <property name="objectApiName" type="String" default='Account' label="Object API Name"/>
             <property name="recordId" type="String" label="Record ID"/>
-            <property name="fieldsToFetchFieldSet" type="String" label="Fieldset containting the fields to display API Name"/>
-            <property name="numberOfColumns" type="integer" default='1' label="Number of Columns"/>
+            <property name="displayedFieldsFieldSet" type="String" label="Fieldset containting the fields to display API Name"/>
+            <property name="numberOfColumns" type="integer" default='2' label="Number of Columns" max='2'/>
         </targetConfig>
       </targetConfigs>
 </LightningComponentBundle>

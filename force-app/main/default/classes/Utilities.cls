@@ -23,11 +23,11 @@ public with sharing class Utilities
     }
 
     @AuraEnabled
-    public static SObject executeInitCloneableSObject(String cloneableClassName, Id originalSObjectId)
+    public static SObject doInitSObject(String customQuickActionHandler, Id originalSObjectId)
     {
         try{
-            ICloneable cloneableInstance = getCloneableInstance(cloneableClassName);
-            return cloneableInstance.initCloneableSObject(originalSObjectId);
+            QuickActionHandler quickActionHandlerInstance = getQuickActionHandler(customQuickActionHandler);
+            return quickActionHandlerInstance.initSObject(originalSObjectId);
         }
         catch(Exception exceptionInstance)
         {
@@ -36,11 +36,11 @@ public with sharing class Utilities
     }
 
     @AuraEnabled
-    public static Id executeClone(String cloneableClassName, Id originalSObjectId, Map<String,Object> fieldsMap)
+    public static Id doSave(String customQuickActionHandler, Id originalSObjectId, SObject fieldsMap)
     {
         try{
-            ICloneable cloneableInstance = getCloneableInstance(cloneableClassName);
-            return cloneableInstance.doClone(originalSObjectId, fieldsMap);
+            QuickActionHandler quickActionHandlerInstance = getQuickActionHandler(customQuickActionHandler);
+            return quickActionHandlerInstance.doSave(originalSObjectId, fieldsMap);
         }
         catch(Exception exceptionInstance)
         {
@@ -48,9 +48,9 @@ public with sharing class Utilities
         }
     }
 
-    private static ICloneable getCloneableInstance(String cloneableClassName)
+    private static QuickActionHandler getQuickActionHandler(String customQuickActionHandler)
     {
-        Type classType = Type.forName(cloneableClassName);
-        return (ICloneable)classType.newInstance();
+        Type classType = Type.forName(customQuickActionHandler);
+        return (QuickActionHandler)classType.newInstance();
     }
 }

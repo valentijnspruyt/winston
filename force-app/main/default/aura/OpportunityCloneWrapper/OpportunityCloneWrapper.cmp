@@ -2,8 +2,10 @@
     <c:objectClone
         recordId="{!v.recordId}"
         objectApiName="{!v.sObjectName}"
-        numberOfColumns="2"
-        fieldsToFetchFieldSet="cloneableFields"
-        cloneableClassName="OpportunityCloneable">
+        customQuickActionHandler="OpportunityCloneQuickActionHandler">
+        <!-- customQuickActionHandler -->
     </c:objectClone>
+    <!-- numberOfColumns="2" -->
+    <!-- displayedFieldsFieldSet="cloneableFields" -->
+
 </aura:component>
